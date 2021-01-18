@@ -88,7 +88,10 @@ is 3, the sequence will be `[1, 2, 3, 4, 5, None, 99]`.
 
 from django import template
 from django.core import paginator
-from django.core.urlresolvers import reverse
+try:
+    from django.urls import reverse
+except ImportError:
+    from django.core.urlresolvers import reverse
 
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.safestring import mark_safe
@@ -182,7 +185,7 @@ class PaginationPlusNode(template.Node):
             rangeStart = max(min(paginator.num_pages, r[0]), last + 1)
             rangeEnd = min(paginator.num_pages, r[1])
             if rangeStart <= rangeEnd:
-                for p in xrange(rangeStart, rangeEnd + 1):
+                for p in range(rangeStart, rangeEnd + 1):
                     yield PaginationPage(p, p == page.number, partial_url)
                 last = rangeEnd
     
@@ -241,7 +244,7 @@ class PaginationPlusNode(template.Node):
 
 
 
-@register.assignment_tag
+@register.simple_tag
 def paginationplus_url(url_name, **kwargs):
     return PartialUrl(url_name, **kwargs)
 
