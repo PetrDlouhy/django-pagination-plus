@@ -215,10 +215,11 @@ class PaginationPlusNode(template.Node):
                 
     
     def render(self, context):
-        page = template.Variable(self.page)
-        page = page.resolve(context)
-        self.page = page
-        if not isinstance(page, paginator.Page):
+        if not isinstance(self.page, paginator.Page):
+            page = template.Variable(self.page)
+            page = page.resolve(context)
+            self.page = page
+        if not isinstance(self.page, paginator.Page):
             raise template.TemplateSyntaxError(
                 '%r is not a valid Page object' % self.page
             )
