@@ -163,7 +163,7 @@ class PaginationPlusNode(template.Node):
         self.contiguous = getattr(settings, 'PAGINATIONPLUS_CONTIGUOUS', False)
 
     def pagination(self, partial_url):
-        page = self.page
+        page = self.page_variable
         paginator = page.paginator
         if self.contiguous:
             for p in itertools.imap(
@@ -215,13 +215,12 @@ class PaginationPlusNode(template.Node):
                 
     
     def render(self, context):
-        if not isinstance(self.page, paginator.Page):
-            page = template.Variable(self.page)
-            page = page.resolve(context)
-            self.page = page
-        if not isinstance(self.page, paginator.Page):
+        page = template.Variable(self.page)
+        page = page.resolve(context)
+        self.page_variable = page
+        if not isinstance(self.page_variable, paginator.Page):
             raise template.TemplateSyntaxError(
-                '%r is not a valid Page object' % self.page
+                '%r is not a valid Page object' % self.page_variable
             )
         url_args, url_kwargs = self.url_kwargs_to_dict(context)
         partial_url = PartialUrl(self.url_name, *url_args, **url_kwargs)
